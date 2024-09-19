@@ -1,10 +1,4 @@
-// let num;
-// let intNum;
-// do {
-//     num = prompt('Enter number:');
-//     intNum = Number(num);
-//     console.log(isNaN(intNum));
-// } while(isNaN(intNum));
+
 let player2Choice = (function() {
     console.log('Player 1: You. \nChoose player 2: Your friend(Enter \'1\') / Computer(Enter \'2\')');
     
@@ -27,7 +21,7 @@ console.log('hello');
 let rowNum, colNum;
 
 let winner;
-for (player = 1, i = 0; i < 9; i++) {
+for (let player = 1, i = 0; i < 9; i++) {
     if (player == 1) {
         do {
             [rowNum, colNum] = player1.getPlayerChoice();
@@ -59,12 +53,12 @@ function checkForWinner(avatar) {
                 rowAvatarCount++;
             }
         }
-        rowAvatarCount = 0;
-
+        
         if (rowAvatarCount == 3) {
             console.log('won by row');
             return true;
         }
+        rowAvatarCount = 0;
     }
     
     for (j = 0; j < 3; j++) { //check avatar count in each column
@@ -74,12 +68,11 @@ function checkForWinner(avatar) {
             }
         }
 
-        columnAvatarCount = 0;
-
         if (columnAvatarCount == 3) {
             console.log('won by column');
             return true;
         }
+        columnAvatarCount = 0;
     }
     
     if ((boardArray[0][0]==avatar && boardArray[1][1]==avatar && boardArray[2][2]==avatar) || (boardArray[0][2]==avatar && boardArray[1][1]==avatar && boardArray[2][0]==avatar)) {
@@ -115,8 +108,28 @@ function createBoard(player2Choice) {
 
     let player1 = new Player('you', 'X');
 
-    let player2 = new Player('your friend', 'O');
+    let player2;
 
+    if (player2Choice == 1) {
+        player2 = new Player('your friend', 'O');
+    } else {
+        player2 = new Player('computer', 'O');
+        player2.getPlayerChoice = function() {
+            let allowedNums = [1, 2, 3];
+            function getRandomComputerChoice() {
+                let num = allowedNums[Math.floor(Math.random() * allowedNums.length)];
+                return num;
+            }
+
+            rowNum = getRandomComputerChoice();
+
+            console.log(rowNum);
+            colNum = getRandomComputerChoice();
+            console.log(colNum);
+
+            return [rowNum, colNum];
+        }
+    }
     function Player(name, avatar, score) {
         this.name = name;
         this.avatar = avatar;
