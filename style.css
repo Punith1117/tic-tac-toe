@@ -1,0 +1,113 @@
+@font-face {
+    font-family: game-name-font;
+    src: url(Unlock-Regular.ttf);
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(128, 56, 56);
+}
+
+header > .name {
+    font-family: game-name-font;
+    font-size: max(5vw, 4rem);
+    text-wrap: nowrap;
+    color: rgba(255, 255, 255, 0.973);
+}
+
+header > .author {
+    color: white;
+    a {
+        color: rgb(184, 131, 233);
+    }
+}
+
+.choose-player2 {
+    height: 30vh;
+    width: 30vw;
+    min-width: 22rem;
+    margin: auto;
+    margin-top: 30vh;
+    padding: 0px;
+    padding-top: 10px;
+    border: 2px solid rgb(122, 122, 255);
+    border-radius: 1rem;
+    background-color: rgb(238, 171, 90);
+    box-shadow: 2rem 1rem 1rem rgba(0, 0, 0, 0.747);
+}
+
+.choose-player2 > form {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+    grid-template-columns: 2fr 3fr;
+    margin: 0px;
+}
+
+.confirm {
+    grid-column: 1 / 3;
+}
+
+.player1 > .player-avatar{
+    background-image: url(svgs/sword-svgrepo-com.svg);
+    height: 60%;
+    width: 70%;
+    margin-left: 2rem;
+}
+
+.player2 > .player-avatar {
+    background-image: url(svgs/gun-svgrepo-com.svg);
+    width: 50%;
+    height: 60%;
+    margin-left: 3rem;
+}
+
+.player-avatar {
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.player1, .player2, .confirm {
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 10%;
+}
+
+.confirm > button {
+    background-color: rgb(75, 158, 75);
+    border: 0px;
+    width: 100%;
+    height: 50%;
+    &:hover {
+        background-color: rgb(86, 182, 86);
+        color: white;
+        cursor: pointer;
+    }
+}
+
+.player-number {
+    background-color: rgb(120, 120, 196);
+    padding: 5px;
+    border-radius: 10px;
+    color: white;
+}
+
+.player-name > label {
+    font-weight: 900;
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+input[type="radio"]:focus {
+    outline: none;
+}
