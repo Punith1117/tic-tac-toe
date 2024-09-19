@@ -1,54 +1,61 @@
 
-let player2Choice = (function() {
-    console.log('Player 1: You. \nChoose player 2: Your friend(Enter \'1\') / Computer(Enter \'2\')');
-    
-    let player2Choice;
-    const player2ChoiceCheck = /^[12]$/;
-    
-    do {
-        player2Choice = prompt('Choose player: ');
-        console.log(player2Choice);
-    } while (player2ChoiceCheck.test(player2Choice) == false);
+let player1, player2, boardArray;
 
-    return player2Choice;
+(function() {
+    let getPlayer2Choice;
+    let player2ChoiceDialog = document.querySelector('.choose-player2');
+    console.log(player2ChoiceDialog);
+    player2ChoiceDialog.showModal();
+    let player2ChoiceForm = player2ChoiceDialog.querySelector('form');
+    player2ChoiceForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        let selectionValues = document.querySelectorAll('input[name="player2-name"]');
+        selectionValues.forEach((selectedValue) =>{
+            if(selectedValue.checked) {
+                getPlayer2Choice = selectedValue.value;
+            }
+        });
+        console.log('value taken');
+        console.log(getPlayer2Choice);
+        player2ChoiceDialog.close();
+        [player1, player2, boardArray] = createBoard(getPlayer2Choice);
+        console.log(player1, player2, boardArray);
+    });
+
 })();
 
-let [player1, player2, boardArray] = createBoard(player2Choice);
-
-console.log(player1, player2);
 console.log('hello');
-
 let rowNum, colNum;
 
 let winner;
-for (let player = 1, i = 0; i < 9; i++) {
-    if (player == 1) {
-        do {
-            [rowNum, colNum] = player1.getPlayerChoice();
-        } while (assignAvatar(rowNum, colNum, player1.avatar) == false);
-
-        if(checkForWinner('X') == true) {
-            console.log('The Winner is ' + player1.name);
-            break;
-        }
-    } else {
-        do {
-            [rowNum, colNum] = player2.getPlayerChoice();
-        } while (assignAvatar(rowNum, colNum, player2.avatar) == false);
-        
-        if(checkForWinner('O') == true) {
-            console.log('The Winner is ' + player2.name);
-            break;
-        }
-    }
-
-    (player == 1) ? player = 2 : player = 1;
-}
-
-function checkForWinner(avatar) {
-    let rowAvatarCount = 0, columnAvatarCount = 0, diagonalAvatarCount = 0;
-    for (i = 0; i < 3; i++) { //check avatar count in each row
-        for (j = 0; j < 3; j++) {
+// for (let player = 1, i = 0; i < 9; i++) {
+    //     if (player == 1) {
+        //         do {
+            //             [rowNum, colNum] = player1.getPlayerChoice();
+            //         } while (assignAvatar(rowNum, colNum, player1.avatar) == false);
+            
+            //         if(checkForWinner('X') == true) {
+                //             console.log('The Winner is ' + player1.name);
+                //             break;
+                //         }
+                //     } else {
+                    //         do {
+                        //             [rowNum, colNum] = player2.getPlayerChoice();
+                        //         } while (assignAvatar(rowNum, colNum, player2.avatar) == false);
+                        
+                        //         if(checkForWinner('O') == true) {
+                            //             console.log('The Winner is ' + player2.name);
+                            //             break;
+                            //         }
+                            //     }
+                            
+                            //     (player == 1) ? player = 2 : player = 1;
+                            // }
+                            
+                            function checkForWinner(avatar) {
+                                let rowAvatarCount = 0, columnAvatarCount = 0, diagonalAvatarCount = 0;
+                                for (i = 0; i < 3; i++) { //check avatar count in each row
+                                    for (j = 0; j < 3; j++) {
             if (boardArray[i][j] == avatar) {
                 rowAvatarCount++;
             }
@@ -67,7 +74,7 @@ function checkForWinner(avatar) {
                 columnAvatarCount++;
             }
         }
-
+        
         if (columnAvatarCount == 3) {
             console.log('won by column');
             return true;
@@ -79,7 +86,7 @@ function checkForWinner(avatar) {
         console.log('won by diagonal');
         return true;
     }
-
+    
     return false;
 }
 
@@ -105,12 +112,12 @@ function displayArray() {
 
 function createBoard(player2Choice) {
     let boardArray = create2DArray(3, 3, 1);
-
+    
     let player1 = new Player('you', 'X');
-
+    
     let player2;
-
-    if (player2Choice == 1) {
+    
+    if (player2Choice == 'friend') {
         player2 = new Player('your friend', 'O');
     } else {
         player2 = new Player('computer', 'O');
@@ -120,13 +127,13 @@ function createBoard(player2Choice) {
                 let num = allowedNums[Math.floor(Math.random() * allowedNums.length)];
                 return num;
             }
-
+            
             rowNum = getRandomComputerChoice();
-
+            
             console.log(rowNum);
             colNum = getRandomComputerChoice();
             console.log(colNum);
-
+            
             return [rowNum, colNum];
         }
     }
@@ -135,7 +142,7 @@ function createBoard(player2Choice) {
         this.avatar = avatar;
         this.score = score;
     }
-
+    
     Player.prototype.getPlayerChoice = function() {
         let rowNum, colNum;
         do {
@@ -147,7 +154,7 @@ function createBoard(player2Choice) {
             colNum = prompt(`${this.name} enter column number:`);
             colNum = Number(colNum);
         } while (colNum > 3 || colNum < 1 || isNaN(colNum));
-
+        
         return [rowNum, colNum];
     }
     
@@ -161,6 +168,7 @@ function createBoard(player2Choice) {
         }
         return arr;
     }
+    
 
     return [player1, player2, boardArray];
 
