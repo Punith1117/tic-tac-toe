@@ -4,6 +4,12 @@ let player1, player2, boardArray;
 let playerNum = 1;
 let winner;
 
+document.addEventListener('keydown', function(event) {
+    if (event.key == 'Escape') {
+        event.preventDefault();
+    }
+});
+
 (function() { //ask user player 2 choice and start game
     let getPlayer2Choice;
     let player2ChoiceDialog = document.querySelector('.choose-player2');
