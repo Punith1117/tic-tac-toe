@@ -259,7 +259,7 @@ function clearBoard() {
     boxes.forEach((box) => {
         box.dataset.filled = 'false';
         box.className = 'box';
-        box.style.backgroundColor = '#e4ecc0';
+        box.style.removeProperty('background-color');
     })
     for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
