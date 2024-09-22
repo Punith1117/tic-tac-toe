@@ -272,7 +272,7 @@ function createGame(player2Choice) {
     
     let player1 = new Player('You', 'Sword', 0);
     let player1Box = document.createElement('div');
-    player1Box.textContent = `${player1.name}(${player1.avatar}) score:${player1.score}`;
+    player1Box.textContent = `${player1.name}(${player1.avatar}) score: ${player1.score}`;
     player1Box.classList.add('player-box');
     player1Box.classList.add(`player-${player1.name}`);
     player1.playerBox = player1Box;
@@ -283,13 +283,13 @@ function createGame(player2Choice) {
     
     if (player2Choice == 'Friend') {
         player2 = new Player('Friend', 'Gun', 0);
-        player2Box.textContent = `${player2.name}(${player2.avatar}) score:${player2.score}`;
+        player2Box.textContent = `${player2.name}(${player2.avatar}) score: ${player2.score}`;
         player2Box.classList.add('player-box');
         player2Box.classList.add(`player-${player2.name}`);
         player2.playerBox = player2Box;
     } else {
         player2 = new Player('Computer', 'Gun', 0);
-        player2Box.textContent = `${player2.name}(${player2.avatar}) score:${player2.score}`;
+        player2Box.textContent = `${player2.name}(${player2.avatar}) score: ${player2.score}`;
         player2Box.classList.add('player-box');
         player2Box.classList.add(`player-${player2.name}`);
         player2.playerBox = player2Box;
@@ -325,7 +325,7 @@ function createGame(player2Choice) {
     Player.prototype.addScore = function() {
         this.score++;
         let playerScore = document.querySelector(`.player-${this.name}`);
-        playerScore.textContent = `${this.name}(${this.avatar}) score:${this.score}`;
+        playerScore.textContent = `${this.name}(${this.avatar}) score: ${this.score}`;
     }
     function create2DArray(rows, cols, initialValue) {
         let arr = [];
