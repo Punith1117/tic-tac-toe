@@ -1,67 +1,151 @@
+let rowNum, colNum;
 
 let player1, player2, boardArray;
+let playerNum = 1;
+let winner;
 
-(function() {
+(function() { //ask user player 2 choice and start game
     let getPlayer2Choice;
     let player2ChoiceDialog = document.querySelector('.choose-player2');
-    console.log(player2ChoiceDialog);
     player2ChoiceDialog.showModal();
     let player2ChoiceForm = player2ChoiceDialog.querySelector('form');
     player2ChoiceForm.addEventListener('submit', (event) => {
         event.preventDefault();
         let selectionValues = document.querySelectorAll('input[name="player2-name"]');
-        selectionValues.forEach((selectedValue) =>{
+        selectionValues.forEach((selectedValue) => {
             if(selectedValue.checked) {
                 getPlayer2Choice = selectedValue.value;
             }
         });
-        console.log('value taken');
         console.log(getPlayer2Choice);
         player2ChoiceDialog.close();
-        [player1, player2, boardArray] = createBoard(getPlayer2Choice);
-        console.log(player1, player2, boardArray);
+        [player1, player2, boardArray, boxContainer] = createGame(getPlayer2Choice);
+        console.log(player1, player2, boardArray, boxContainer);
+        console.log('game started');
+        player1.givePlayerChance();
+        addClickResponsePlayers();
     });
-
 })();
 
-console.log('hello');
-let rowNum, colNum;
 
-let winner;
-// for (let player = 1, i = 0; i < 9; i++) {
-    //     if (player == 1) {
-        //         do {
-            //             [rowNum, colNum] = player1.getPlayerChoice();
-            //         } while (assignAvatar(rowNum, colNum, player1.avatar) == false);
-            
-            //         if(checkForWinner('X') == true) {
-                //             console.log('The Winner is ' + player1.name);
-                //             break;
-                //         }
-                //     } else {
-                    //         do {
-                        //             [rowNum, colNum] = player2.getPlayerChoice();
-                        //         } while (assignAvatar(rowNum, colNum, player2.avatar) == false);
-                        
-                        //         if(checkForWinner('O') == true) {
-                            //             console.log('The Winner is ' + player2.name);
-                            //             break;
-                            //         }
-                            //     }
-                            
-                            //     (player == 1) ? player = 2 : player = 1;
-                            // }
-                            
-                            function checkForWinner(avatar) {
-                                let rowAvatarCount = 0, columnAvatarCount = 0, diagonalAvatarCount = 0;
-                                for (i = 0; i < 3; i++) { //check avatar count in each row
-                                    for (j = 0; j < 3; j++) {
+function addClickResponsePlayers() {
+    let boxes = document.querySelectorAll('.box');
+    boxes.forEach((box) => {
+        box.addEventListener('click', () => {
+            if (box.dataset.filled == 'false') {
+                if(playerNum == 1) {
+                    displayAvatar(box, player1.avatar);
+                    box.dataset.filled = 'true';
+                    if (checkForWinner(player1.avatar)) {
+                        console.log("you won");
+                        fillAllBoxes();
+                        return true; // Exit the function if there's a winner
+                    } else {
+                        if(checkForTie(player1.avatar)) {
+                            return true;
+                        };
+                    }
+                    player2.givePlayerChance();
+                    player1.removePlayerChance();
+                    playerNum = 2;
+                    if (player2.name == 'Computer'){
+                        displayComputerChoice(player2.avatar);
+                        if (checkForWinner(player2.avatar)) {
+                            console.log("computer won");
+                            fillAllBoxes();
+                            return true; // Exit the function if there's a winner
+                        } else {
+                            if(checkForTie(player2.avatar)) {
+                                return true;
+                            };
+                        }
+                        player1.givePlayerChance();
+                        player2.removePlayerChance();
+                        playerNum = 1;
+                    }
+                } else {
+                    box.dataset.filled = 'true';
+                    displayAvatar(box, player2.avatar);
+                    if (checkForWinner(player2.avatar)) {
+                        console.log("friend won");
+                        fillAllBoxes();
+                        return true; // Exit the function if there's a winner
+                    } else {
+                        if(checkForTie(player2.avatar)) {
+                            return true;
+                        };   
+                    }
+                    player1.givePlayerChance();
+                    player2.removePlayerChance();
+                    playerNum = 1;
+                }
+            }
+        });
+    });
+}
+
+function displayComputerChoice() {
+    let compBoxes = document.querySelectorAll('.box');
+    let boxFound = false;
+    while (!boxFound) {
+        let [rowNum, colNum] = player2.getPlayerChoice();
+        compBoxes.forEach((compBox) => {
+            if((compBox.dataset.rowNum == rowNum) && (compBox.dataset.columnNum == colNum) && (compBox.dataset.filled == 'false')) {
+                displayAvatar(compBox, player2.avatar);
+                compBox.dataset.filled = 'true';
+                boxFound = true;
+            }
+        })
+    }
+}
+
+function displayAvatar(box, avatar) {
+    box.classList.add(avatar.toLowerCase());
+    boardArray[box.dataset.rowNum][box.dataset.columnNum] = avatar;
+    displayArray();
+}
+
+
+function checkForTie() {
+    let numOfBoxesFilled = 0;
+    let boxes = document.querySelectorAll('.box');
+    boxes.forEach((box) => {
+        if(box.dataset.filled == "true") {
+            numOfBoxesFilled++;
+        }
+    })
+    
+    if (numOfBoxesFilled == 9) {
+        console.log("Its a tie");
+        askToPlayAgain();
+        player1.addScore();
+        player2.addScore();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function checkForWinner(avatar) {
+    let rowAvatarCount = 0, columnAvatarCount = 0;
+    for (i = 0; i < 3; i++) { //check avatar count in each row
+        for (j = 0; j < 3; j++) {
             if (boardArray[i][j] == avatar) {
                 rowAvatarCount++;
             }
         }
         
         if (rowAvatarCount == 3) {
+            let boxes = document.querySelectorAll(`.box[data-row-num="${i}"]`);
+            boxes.forEach((box) => {
+                box.style.backgroundColor = '#71cf71';
+            })
+            if(avatar == 'Sword') {
+                player1.addScore();
+            } else {
+                player2.addScore();
+            }
+            askToPlayAgain();
             console.log('won by row');
             return true;
         }
@@ -76,13 +160,50 @@ let winner;
         }
         
         if (columnAvatarCount == 3) {
+            let boxes = document.querySelectorAll(`.box[data-column-num="${j}"]`);
+            boxes.forEach((box) => {
+                box.style.backgroundColor = '#71cf71';
+            })
+            if(avatar == 'Sword') {
+                player1.addScore();
+            } else {
+                player2.addScore();
+            }
+            askToPlayAgain();
             console.log('won by column');
             return true;
         }
         columnAvatarCount = 0;
     }
     
-    if ((boardArray[0][0]==avatar && boardArray[1][1]==avatar && boardArray[2][2]==avatar) || (boardArray[0][2]==avatar && boardArray[1][1]==avatar && boardArray[2][0]==avatar)) {
+    if ((boardArray[0][0]==avatar && boardArray[1][1]==avatar && boardArray[2][2]==avatar)) {
+        let boxes = document.querySelectorAll('.box') 
+        boxes.forEach((box) => {
+            if (box.dataset.columnNum == box.dataset.rowNum) {
+                box.style.backgroundColor = '#71cf71';
+            }
+        });
+        if(avatar == 'Sword') {
+            player1.addScore();
+        } else {
+            player2.addScore();
+        }
+        askToPlayAgain();
+        console.log('won by diagonal');
+        return true;
+    } else if ((boardArray[0][2]==avatar && boardArray[1][1]==avatar && boardArray[2][0]==avatar)) {
+        let box1 = document.querySelector('.box[data-row-num="0"][data-column-num="2"]');
+        box1.style.backgroundColor = '#71cf71';
+        let box2 = document.querySelector('.box[data-row-num="2"][data-column-num="0"]');
+        box2.style.backgroundColor = '#71cf71';
+        let box3 = document.querySelector('.box[data-row-num="1"][data-column-num="1"]');
+        box3.style.backgroundColor = '#71cf71';
+        if(avatar == 'Sword') {
+            player1.addScore();
+        } else {
+            player2.addScore();
+        }
+        askToPlayAgain();
         console.log('won by diagonal');
         return true;
     }
@@ -90,13 +211,22 @@ let winner;
     return false;
 }
 
-function assignAvatar(rowNum, colNum, playerAvatar) {
-    if (boardArray[rowNum-1][colNum-1] == 1) {
-        boardArray[rowNum-1][colNum-1] = playerAvatar;
-        displayArray();
+function fillAllBoxes() {
+    let boxes = document.querySelectorAll('.box');
+    boxes.forEach((box) => {
+        box.dataset.filled = 'true';
+    })
+}
+
+function assignAvatar(rowNum, colNum, playerAvatar, box) {
+    boardArray[rowNum][colNum] = playerAvatar;
+    if (playerAvatar == 'Sword') {
+        box.classList.add('sword');
     } else {
-        return false;
+        box.classList.add('gun');
     }
+    displayArray();
+    return true;
 }
 
 function displayArray() {
@@ -110,19 +240,61 @@ function displayArray() {
     }
 }
 
-function createBoard(player2Choice) {
+function askToPlayAgain() {
+    let board = document.querySelector('.board-section');
+    let playAgain = document.createElement('button');
+    playAgain.type = 'button';
+    playAgain.textContent = 'Play Again';
+    playAgain.classList.add('play-again');
+    playAgain.addEventListener('click', () => {
+        clearBoard();
+        playAgain.remove();
+    }) 
+    board.prepend(playAgain);
+    playerNum = 1;
+}
+
+function clearBoard() {
+    let boxes = document.querySelectorAll('.box');
+    boxes.forEach((box) => {
+        box.dataset.filled = 'false';
+        box.className = 'box';
+        box.style.backgroundColor = '#e4ecc0';
+    })
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            boardArray[i][j] = 1;
+        }
+    }
+}
+function createGame(player2Choice) {
     let boardArray = create2DArray(3, 3, 1);
     
-    let player1 = new Player('you', 'X');
+    let player1 = new Player('You', 'Sword', 0);
+    let player1Box = document.createElement('div');
+    player1Box.textContent = `${player1.name}(${player1.avatar}) score:${player1.score}`;
+    player1Box.classList.add('player-box');
+    player1Box.classList.add(`player-${player1.name}`);
+    player1.playerBox = player1Box;
     
     let player2;
+    let player2Box = document.createElement('div');
     
-    if (player2Choice == 'friend') {
-        player2 = new Player('your friend', 'O');
+    
+    if (player2Choice == 'Friend') {
+        player2 = new Player('Friend', 'Gun', 0);
+        player2Box.textContent = `${player2.name}(${player2.avatar}) score:${player2.score}`;
+        player2Box.classList.add('player-box');
+        player2Box.classList.add(`player-${player2.name}`);
+        player2.playerBox = player2Box;
     } else {
-        player2 = new Player('computer', 'O');
+        player2 = new Player('Computer', 'Gun', 0);
+        player2Box.textContent = `${player2.name}(${player2.avatar}) score:${player2.score}`;
+        player2Box.classList.add('player-box');
+        player2Box.classList.add(`player-${player2.name}`);
+        player2.playerBox = player2Box;
         player2.getPlayerChoice = function() {
-            let allowedNums = [1, 2, 3];
+            let allowedNums = [0, 1, 2];
             function getRandomComputerChoice() {
                 let num = allowedNums[Math.floor(Math.random() * allowedNums.length)];
                 return num;
@@ -130,10 +302,8 @@ function createBoard(player2Choice) {
             
             rowNum = getRandomComputerChoice();
             
-            console.log(rowNum);
             colNum = getRandomComputerChoice();
-            console.log(colNum);
-            
+                        
             return [rowNum, colNum];
         }
     }
@@ -141,23 +311,22 @@ function createBoard(player2Choice) {
         this.name = name;
         this.avatar = avatar;
         this.score = score;
+        this.playerBox;
     }
     
-    Player.prototype.getPlayerChoice = function() {
-        let rowNum, colNum;
-        do {
-            rowNum = prompt(`${this.name} enter row num:`);
-            rowNum = Number(rowNum);
-        } while (rowNum > 3 || rowNum < 1 || isNaN(rowNum));
-        
-        do {
-            colNum = prompt(`${this.name} enter column number:`);
-            colNum = Number(colNum);
-        } while (colNum > 3 || colNum < 1 || isNaN(colNum));
-        
-        return [rowNum, colNum];
+    Player.prototype.givePlayerChance = function() {
+        this.playerBox.classList.add('my-chance');
     }
     
+    Player.prototype.removePlayerChance = function() {
+        this.playerBox.classList.remove('my-chance');
+    }
+
+    Player.prototype.addScore = function() {
+        this.score++;
+        let playerScore = document.querySelector(`.player-${this.name}`);
+        playerScore.textContent = `${this.name}(${this.avatar}) score:${this.score}`;
+    }
     function create2DArray(rows, cols, initialValue) {
         let arr = [];
         for (let i = 0; i < rows; i++) {
@@ -169,7 +338,34 @@ function createBoard(player2Choice) {
         return arr;
     }
     
+    (function createBoard() {
+        let htmlBody = document.querySelector('body');
+        let playerBoxSection = document.createElement('div');
+        playerBoxSection.classList.add('player-box-section');
+        let boardSection = document.createElement('div');
+        boardSection.classList.add('board-section');
+        boxContainer = document.createElement('div');
+        boxContainer.classList.add('box-container');
+        let mainContainer = document.createElement('div');
+        mainContainer.classList.add('main-container');
+        for (i = 0; i < 3; i++) {
+            for (j = 0; j < 3; j++) {
+                box = document.createElement('div');
+                box.classList.add('box');
+                box.setAttribute('data-row-num', `${i}`);
+                box.setAttribute('data-column-num', `${j}`);
+                box.setAttribute('data-filled', 'false');
+                boxContainer.appendChild(box);
+            }
+        }
+        playerBoxSection.appendChild(player1Box);
+        playerBoxSection.appendChild(player2Box);
+        boardSection.appendChild(boxContainer);
+        mainContainer.appendChild(playerBoxSection);
+        mainContainer.appendChild(boardSection);
+        htmlBody.appendChild(mainContainer);
+    })();
 
-    return [player1, player2, boardArray];
+    return [player1, player2, boardArray, boxContainer];
 
 }
